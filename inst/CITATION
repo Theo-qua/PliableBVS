@@ -1,8 +1,8 @@
-@software{Asenso_Bpliable_2025,
-  author = {Asenso, Theophilus Quachie and Zucknick, Manuela},
-  license = {MIT},
-  month = Feb,
-  title = {{Bpliable}},
-  url = {https://github.com/Theo-qua/Bpliable},
-  year = {2025}
-}
+bibentry(
+  bibtype  = "software",
+  title    = "Bpliable",
+  author   = c(person("Theophilus Quachie", "Asenso"),
+                    person("Manuela", "Zucknick")),
+  year     = "2025",
+  month   = "Feb"
+)
