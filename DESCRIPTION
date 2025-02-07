@@ -13,17 +13,17 @@ Authors@R: c(
         )
      )
 Imports:
-    Matrix,
     Rlab,
     lgarch,
     mgcv,
     MCMCpack,
     caret,
     pgdraw,
-    plotly,
+    stats,
     graphics,
-    stats
-Maintainer:Theophilus Quachie asenso <t.q.asenso@medisin.uio.no>
+    Matrix,
+    plotly
+Maintainer: Theophilus Quachie asenso <t.q.asenso@medisin.uio.no>
 Description: A flexible bayesian regression model for modeling interactions
 License: GPL (>= 3)
 Encoding: UTF-8

@@ -2,10 +2,10 @@
 #' @import lgarch
 #' @import mgcv
 #' @import MCMCpack
-#' @import Matrix
+#' @importFrom Matrix sparseMatrix Diagonal bdiag
 #' @import caret
 #' @import pgdraw
 #' @import plotly
-#' @import stats
-#' @import graphics
+#' @importFrom stats dist hclust lm rbinom var
+#' @importFrom graphics abline axis lines matplot points segments text
 NULL
