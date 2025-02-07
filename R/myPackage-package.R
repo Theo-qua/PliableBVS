@@ -1,5 +1,4 @@
 #' @import Rlab
-#' @import compositions
 #' @import lgarch
 #' @import mgcv
 #' @import MCMCpack
