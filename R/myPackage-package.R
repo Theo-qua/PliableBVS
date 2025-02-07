@@ -2,7 +2,7 @@
 #' @import lgarch
 #' @import mgcv
 #' @import MCMCpack
-#' @importFrom Matrix sparseMatrix Diagonal bdiag
+#' @importFrom Matrix sparseMatrix Diagonal bdiag Matrix
 #' @import caret
 #' @import pgdraw
 #' @import plotly
