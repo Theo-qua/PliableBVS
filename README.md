@@ -1,4 +1,4 @@
 ```r
-devtools::install_github("ocbe-uio/MADMMplasso")
+devtools::install_github("Theo-qua/Bpliable")
 
 ```
