@@ -1,5 +1,6 @@
 bibentry(
-  bibtype  = "software",
+  bibtype  = "Misc",
+  key      = "Bpliablepaper",
   title    = "Bpliable",
   author   = c(person("Theophilus Quachie", "Asenso"),
                     person("Manuela", "Zucknick")),

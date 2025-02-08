@@ -6,6 +6,7 @@
 #' @import caret
 #' @import pgdraw
 #' @import plotly
-#' @importFrom stats dist hclust lm rbinom var
-#' @importFrom graphics abline axis lines matplot points segments text
+#' @importFrom stats dist hclust lm rbinom var median rbeta runif
+#' @importFrom graphics abline axis lines matplot points segments text hist
+#' @importFrom utils tail
 NULL

@@ -22,7 +22,8 @@ Imports:
     stats,
     graphics,
     Matrix,
-    plotly
+    plotly,
+    utils
 Maintainer: Theophilus Quachie asenso <t.q.asenso@medisin.uio.no>
 Description: A flexible bayesian regression model for modeling interactions
 License: GPL (>= 3)
