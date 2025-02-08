@@ -1,3 +1,4 @@
+#' @name Bpliable
 #' @import Rlab
 #' @import lgarch
 #' @import mgcv
