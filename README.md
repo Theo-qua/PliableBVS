@@ -122,8 +122,9 @@ N = 5000 ; p =20;nz=4; K=nz
 
 
 plot(ff,type="val",coef_val=c(3))
+```
 ![Rplot1](https://github.com/user-attachments/assets/7c6bfce3-d06b-489e-8850-2a16683aeeba)
 
 
   
-```
+
