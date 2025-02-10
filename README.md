@@ -36,14 +36,6 @@ N = 5000 ; p =20;nz=4; K=nz
 
  
   
-  
-#   ########## scenario 3 ###########
-# beta <- Matrix(0,  p,sparse=T)
-# beta[1:5] <- c(0.9, -0.7, 0.6,0.8, 0.4);beta[6:10] <- c(0.8, 0.8, 0.8, 0.8,0.8);
-# #coeffs <- cbind(beta[1], beta[2], beta[3] + 2 * Z[, 1], beta[4] * (e - 2 * Z[, 2]))
-#  theta<-Matrix(0,p,K,sparse = T)
-#  theta[1,1]<-0.5;theta[1,4]<- -0.5;theta[2,3]<- -0.5;theta[4,2]<- 0.5;theta[6,2]<- -0.5;theta[6,4]<- 0.5;theta[8,1]<- 0.5;theta[8,3]<- 0.5
-
 
   
   
@@ -55,20 +47,16 @@ N = 5000 ; p =20;nz=4; K=nz
   num_eff<-4
   #coeffs <- cbind(beta[1]+5*Z[,1], beta[2], beta[3] +  3*Z[, 2],  beta[4] *(e -  2*Z[, 3]),beta[5]*(e-2*Z[,4]))
   signal_to_noise_ratio = 6
- # mu <- X%*%beta+pliable1#diag(X[, 1:4] %*% t(coeffs))
+ 
   mu <-  diag(X[, 1:4] %*% t(coeffs))
   mu <-matrix(mu,N,1)
-  #noise = rnorm(N, mean = 0,sd=3.7)# k=4
-  ##### scenarion2 ####
-  #noise = rnorm(N, mean = 0,sd=3.2) k=3
-  ##### scenarion3,4 #### k=1.1
-   ##### scenarion5 #### k=1.8
+  
+  
   noise = rnorm(N, mean = 0,sd=1)
-  kk <- sqrt(var(as.numeric(mu))/(signal_to_noise_ratio*var(noise)))
+  
   kk=4
   y_train <- mu + kk*noise
-  #num_eff=1
-  #y_train <- mu + noise
+  
   y=matrix(y_train,N,1)
   
   
@@ -116,8 +104,7 @@ N = 5000 ; p =20;nz=4; K=nz
   Z_train = predict(preprocess_values_train_Z, train_z_raw)
   Z_test = predict(preprocess_values_train_Z, test_z_raw)
   
-  #Z_train= train_z_raw
- # Z_test=test_z_raw 
+ 
   
   
   mu_train = mu[train_ind, ]
