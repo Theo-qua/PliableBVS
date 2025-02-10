@@ -122,9 +122,16 @@ N = 5000 ; p =20;nz=4; K=nz
 
 
 plot(ff,type="val",coef_val=c(3))
+plot(ff,type="val",coef_val=c(3,1))
+plot(ff,type="likelihood",coef_val=c(3,1))
+plot(ff,type="ms",coef_val=c(3,1))
+plot(ff,type="cont",coef_val=c(3,1))
+plot(ff,type="dist",coef_val=c(3,1))
 ```
 ![Rplot1](https://github.com/user-attachments/assets/7c6bfce3-d06b-489e-8850-2a16683aeeba)
-
-
-  
+![Rplot2](https://github.com/user-attachments/assets/52edb2db-abdd-46bc-bc0b-bef761c2b67d)
+![Rplot3](https://github.com/user-attachments/assets/18fd2987-f2be-4ff1-ae8b-724c367dcb52)
+![Rplot4](https://github.com/user-attachments/assets/b9fe2fd2-6053-45ae-929c-bf9ac3701a45)
+![Rplot5](https://github.com/user-attachments/assets/e795acd6-7e3f-4cd6-92de-fa77e8a9858e)
+![Rplot6](https://github.com/user-attachments/assets/ef89c878-e66b-4ff4-ac26-9952f9a7b371)
 
