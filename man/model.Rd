@@ -7,6 +7,10 @@
 model(beta0, theta0, beta, theta, X, Z)
 }
 \arguments{
+\item{beta0}{beta_0 coefficients}
+
+\item{theta0}{(main effect) coefficients for Z ncol(Z)}
+
 \item{beta}{a vectore of estimated beta coefficients each having a length   ncol(X)}
 
 \item{theta}{theta coefficients for a single response ncol(X) by ncol(Z)}

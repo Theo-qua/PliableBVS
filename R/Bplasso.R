@@ -50,6 +50,8 @@ compute_pliable<-function(X, Z, theta){
 #' Categorical variables should be coded by 0-1 dummy variables: for a k-level variable, one can use either k or k-1  dummy variables.
 #' @param theta    theta coefficients for a single response ncol(X) by ncol(Z)
 #' @param beta a vectore of estimated beta coefficients each having a length   ncol(X)
+#' @param theta0  (main effect) coefficients for Z ncol(Z)
+#' @param beta0   beta_0 coefficients
 #' @return a vector of length N of the  response
 
 
@@ -87,7 +89,7 @@ errfun.binomial=function(y,yhat,w=rep(1,length(y))){
 #' @return a list of all the posterior objects
 #' @export
 Bpliable = function(Y, X,Z,alpha=0.5,family = c("gaussian", "binomial"), niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL,nethod){
-
+  this.call = match.call()
   if(family=="gaussian"){
     cat("using family=",family,",so the loss function is Gaussian")
     fit=Bpliable_gs(Y, X,Z,alpha=alpha, niter = niter, burnin = burnin, a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,num_update = num_update, niter.update =niter.update,burnin.update=burnin.update, verbose1 = verbose1,verbose2 = verbose2, lam1=lam1,lam2=lam2, rho_prior=rho_prior, rho=rho,zeta=zeta,c2=c2,v2=v2, update_tau=update_tau,option.update=option.update,lambda2_update=lambda2_update)
@@ -95,10 +97,10 @@ Bpliable = function(Y, X,Z,alpha=0.5,family = c("gaussian", "binomial"), niter =
     cat("using family=",family,",so the loss function is logistic")
     fit=Bpliable_lr(Y, X,Z,alpha=alpha, niter = niter, burnin = burnin, a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,num_update = num_update, niter.update =niter.update,burnin.update=burnin.update, verbose1 = verbose1,verbose2 = verbose2, lam1=lam1,lam2=lam2, rho_prior=rho_prior, rho=rho,zeta=zeta,c2=c2,v2=v2, update_tau=update_tau,option.update=option.update,lambda2_update=lambda2_update)
 
-    class(fit) <- "Bpliable"
   }
 
-
+  fit$call=this.call
+  class(fit) <- "Bpliable"
 
   return(fit)
 }

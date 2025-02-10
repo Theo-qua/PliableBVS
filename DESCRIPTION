@@ -1,5 +1,4 @@
 Package: Bpliable
-Type: Package
 Title: A flexible bayesian regression model for modeling interactions
 Version: 0.1.0
 Authors@R: c(
@@ -25,8 +24,10 @@ Imports:
     plotly,
     utils
 Maintainer: Theophilus Quachie asenso <t.q.asenso@medisin.uio.no>
-Description: A flexible bayesian regression model for modeling interactions
+Description: A flexible bayesian regression model for modeling interactions. The motivation is from the original piable lasso model.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Date: 2025-02-10
+Language: en-GB
