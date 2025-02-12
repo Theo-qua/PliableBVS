@@ -100,6 +100,7 @@ Bpliable = function(Y, X,Z,alpha=0.5,family = c("gaussian", "binomial"), niter =
   }
 
   fit$call=this.call
+  fit$family=family
   class(fit) <- "Bpliable"
 
   return(fit)
@@ -810,4 +811,31 @@ plot.Bpliable <- function(x, type=c("likelihood","dist","val","cont","ms"),coef_
 
 }
 
+#' @title Compute predicted values from a fitted Bpliable  object.
+#'  Make predictions from a fitted Bpliable model
+#' @description Compute predicted values from a Bpliable object.
+#'  Make predictions from a fitted Bpliable model
+#' @param object object returned from a call to Bpliable
+#' @param X  N by p matrix of predictors
+#' @param Z  N by nz matrix of modifying variables. These may be observed or
+#' the predictions from a supervised learning algorithm that predicts z from
+#' test features x  and possibly other features.
+#' @param y N by 1 matrix  of responses.
+#' @param prob threshold for binomial prediction
+#' @return  predicted response or class
+#' @export
+predict.Bpliable <- function(object, X, Z, y,prob=0.5) {
 
+
+
+
+
+
+  pred_bpl<-model(beta0=object$pos_median_beta0, theta0=object$pos_median_theta0, beta= object$pos_mpm_beta, theta=object$pos_mpm_theta, X, Z)
+
+  if(object$family=="gaussian"){
+    pred_bpl<-pred_bpl}else if(object$family=="binomial"){
+    pred_bpl<-ifelse(pred_bpl>prob,1,0)}
+
+  return(pred_bpl)
+}
