@@ -820,11 +820,10 @@ plot.Bpliable <- function(x, type=c("likelihood","dist","val","cont","ms"),coef_
 #' @param Z  N by nz matrix of modifying variables. These may be observed or
 #' the predictions from a supervised learning algorithm that predicts z from
 #' test features x  and possibly other features.
-#' @param y N by 1 matrix  of responses.
 #' @param prob threshold for binomial prediction
 #' @return  predicted response or class
 #' @export
-predict.Bpliable <- function(object, X, Z, y,prob=0.5) {
+predict.Bpliable <- function(object, X, Z,prob=0.5) {
 
 
 

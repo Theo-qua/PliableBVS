@@ -5,7 +5,7 @@
 \title{Compute predicted values from a fitted Bpliable  object.
  Make predictions from a fitted Bpliable model}
 \usage{
-\method{predict}{Bpliable}(object, X, Z, y, prob = 0.5)
+\method{predict}{Bpliable}(object, X, Z, prob = 0.5)
 }
 \arguments{
 \item{object}{object returned from a call to Bpliable}
@@ -15,8 +15,6 @@
 \item{Z}{N by nz matrix of modifying variables. These may be observed or
 the predictions from a supervised learning algorithm that predicts z from
 test features x  and possibly other features.}
-
-\item{y}{N by 1 matrix  of responses.}
 
 \item{prob}{threshold for binomial prediction}
 }
