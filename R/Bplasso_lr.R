@@ -402,6 +402,7 @@ Bpliable_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 100
   Q = rep(0,p)
   R<-matrix(0,p,K)
 
+  kappa    = Y - 1/2
 
   #####################
   # The Gibbs Sampler #
