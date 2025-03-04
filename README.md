@@ -7,6 +7,8 @@ A flexible Bayesian variable selection method for modeling interactions
 devtools::install_github("Theo-qua/PliableBVS")
 set.seed(1)
 train_frac = 0.75
+val_frac = 0
+test_frac = 0.25
 N = 5000 ; p =20;nz=4; K=nz
   X <- matrix(rnorm(n = N * p), nrow = N, ncol = p)
   
