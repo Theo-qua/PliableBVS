@@ -97,19 +97,19 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
     #
 
     O        = kappa/omega2
-    Y_bar<-O-as.numeric(beta0)-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
+    Y_bar<-O-as.numeric(beta0)-Z%*%(matrix(theta0,ncol = 1))-X%*%beta-compute_pliable(X, Z, theta)
 
     #Y_bar<-Y_center-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
 
     Y_bar1=Y_bar+as.numeric(beta0)
     beta01=beta0
 
-    beta0<-rmnorm(1,mean=( sum(omega2*Y_bar1)/( sum(omega2)+1/c2 ) ),vcov=1/( sum(omega2)+1/c2  ) )
+    beta0<- as.numeric( mnormt::rmnorm(1,mean=( sum(omega2*Y_bar1)/( sum(omega2)+1/c2 ) ),vcov=1/( sum(omega2)+1/c2  ) ) )
 
     Y_bar<-Y_bar-as.numeric(beta0)+as.numeric(beta01)
 
     theta01=theta0
-    Y_bar1=Y_bar+Z%*%(matrix(theta0))
+    Y_bar1=Y_bar+Z%*%(matrix(theta0,ncol = 1))
     #f_theta0<-(t(Z)%*%Z)
 
 
@@ -126,14 +126,14 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
     YtZ<-t(omega2*Y_bar1)%*%Z
     mean_theta0<-f_theta0_inverse%*%t(YtZ)
 
-    theta0<-rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse)
+    theta0<-as.numeric(mnormt::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
 
 
 
 
-    Y_bar<- Y_bar-Z%*%(matrix(theta0))+Z%*%(matrix(theta01))
+    Y_bar<- Y_bar-Z%*%(matrix(theta0,ncol = 1))+Z%*%(matrix(theta01))
 
-    intercepts=as.numeric(beta0)+Z%*%(matrix(theta0))
+    intercepts=as.numeric(beta0)+Z%*%(matrix(theta0,ncol = 1))
 
     # Update beta's
     for(j in 1:p){
@@ -161,7 +161,7 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
 
 
       } else{
-        beta[j] = rmnorm(1, mean=mu, vcov=f2_inverse)
+        beta[j] = as.numeric( mnormt::rmnorm(1, mean=mu, vcov=f2_inverse) )
         Q[j] = 1
         Y_bar=Y_bar+X[,j]*beta_j-X[,j]*beta[j]
         #print(beta[j])
@@ -189,7 +189,7 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
 
           } else{
 
-            theta[j,k] = rmnorm(1, mean=mu, vcov=f2_inverse)
+            theta[j,k] = as.numeric( mnormt::rmnorm(1, mean=mu, vcov=f2_inverse) )
             R[j,k] = 1
 
             Y_bar_j=Y_bar_j+X[,j]*Z[,k]*theta_jk-X[,j]*Z[,k]*theta[j,k]
@@ -212,19 +212,19 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
 
 
     if(update_tau) {
-      tau_theta0=1/rig(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), scale = 1/( v2 ) )
+      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), shape = 1/( v2 ) )
 
 
       for(j in 1:p)
       {
         if(Q[j]==0){tau_beta2[j] = rgamma(1, shape=1, rate=( ((1-alpha)^2)*lambda2[j])/2)}
-        else{tau_beta2[j] = 1/rig(1, mean=sqrt( ( ((1-alpha)^2)*lambda2[j]*sigma2)/sum(beta[j]^2)), scale = 1/( ((1-alpha)^2)*lambda2[j]))}
+        else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((1-alpha)^2)*lambda2[j]*sigma2)/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*lambda2[j]))}
 
         for (k in 1:K) {
 
 
           if(R[j,k]==0){tau_theta2[j,k] = rgamma(1, shape=1, rate=( ((alpha)^2)*lambda2[j])/2)}
-          else{tau_theta2[j,k] = 1/rig(1, mean=sqrt( ( ((alpha)^2)*lambda2[j]*sigma2)/sum(theta[j,k]^2)), scale = 1/( ((alpha)^2)*lambda2[j]))}
+          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*lambda2[j]*sigma2)/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*lambda2[j]))}
 
         }
 
@@ -238,7 +238,7 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
     Y_bar<-O- intercepts-X%*%beta-cp
     s=0
     ss=0
-    for(i in 1:p)
+    for(j in 1:p)
     {
       s = s + sum(beta[j]^2)/tau_beta2[j]
 
@@ -274,7 +274,7 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
     }
    # sigma2 = rinvgamma(1, shape= (K)/2 + sum(Q)/2+sum(R)/2 + lam1,                scale=( ( s+ss+sum(theta0^2)/tau_theta0 )/2 + lam2 ) )
 
-    sigma2 = rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,                scale=( ( s+ss )/2 + lam2 ) )
+    sigma2 = MCMCpack::rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,                scale=( ( s+ss )/2 + lam2 ) )
     #sigma2 = rinvgamma(1, shape=(n)/2+(K)/2 + sum(Q)/2+sum(R)/2 + lam1,
     #                   scale=( t(Y_bar)%*%Y_bar+s+ss+sum(theta0))/2 + gamma)
 
@@ -432,14 +432,14 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
 
 
       O= kappa/omega2
-      Y_bar<-O-as.numeric(beta0)-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
+      Y_bar<-O-as.numeric(beta0)-Z%*%(matrix(theta0,ncol = 1))-X%*%beta-compute_pliable(X, Z, theta)
 
       #Y_bar<-Y_center-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
 
       Y_bar1=Y_bar+as.numeric(beta0)
       beta01=beta0
 
-      beta0<-rmnorm(1,mean=( sum(omega2*Y_bar1)/( sum(omega2)+1/c2 ) ),vcov=1/( sum(omega2)+1/c2  ) )
+      beta0<- as.numeric(mnormt::rmnorm(1,mean=( sum(omega2*Y_bar1)/( sum(omega2)+1/c2 ) ),vcov=1/( sum(omega2)+1/c2  ) ) )
 
       Y_bar<-Y_bar-as.numeric(beta0)+as.numeric(beta01)
 
@@ -461,14 +461,14 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       YtZ<-t(omega2*Y_bar1)%*%Z
       mean_theta0<-f_theta0_inverse%*%t(YtZ)
 
-      theta0<-rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse)
+      theta0<- as.numeric(mnormt::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
 
 
 
 
-      Y_bar<- Y_bar-Z%*%(matrix(theta0))+Z%*%(matrix(theta01))
+      Y_bar<- Y_bar-Z%*%(matrix(theta0,ncol = 1))+Z%*%(matrix(theta01,ncol = 1))
 
-      intercepts=as.numeric(beta0)+Z%*%(matrix(theta0))
+      intercepts=as.numeric(beta0)+Z%*%(matrix(theta0,ncol = 1))
 
       # Update beta's
       for(j in 1:p)
@@ -497,7 +497,7 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
 
 
         } else{
-          beta[j] = rmnorm(1, mean=mu, vcov=f2_inverse)
+          beta[j] = as.numeric(mnormt::rmnorm(1, mean=mu, vcov=f2_inverse) )
           Q[j] = 1
           Y_bar=Y_bar+X[,j]*beta_j-X[,j]*beta[j]
           #print(beta[j])
@@ -525,7 +525,7 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
 
             } else{
 
-              theta[j,k] = rmnorm(1, mean=mu, vcov=f2_inverse)
+              theta[j,k] = as.numeric(mnormt::rmnorm(1, mean=mu, vcov=f2_inverse) )
               R[j,k] = 1
 
               Y_bar_j=Y_bar_j+X[,j]*Z[,k]*theta_jk-X[,j]*Z[,k]*theta[j,k]
@@ -548,19 +548,19 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       for(j in 1:p)
       {
         if(Q[j]==0){tau_beta2[j] = rgamma(1, shape=1, rate=((1-alpha)^2)*matlambda2[j]/2)}
-        else{tau_beta2[j] = 1/rig(1, mean=sqrt(( ((1-alpha)^2)*matlambda2[j]*sigma2)/sum(beta[j]^2)), scale = 1/( ((1-alpha)^2)*matlambda2[j]))}
+        else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt(( ((1-alpha)^2)*matlambda2[j]*sigma2)/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*matlambda2[j]))}
 
 
         for (k in 1:K) {
 
 
           if(R[j,k]==0){tau_theta2[j,k] = rgamma(1, shape=1, rate=( ((alpha)^2)*matlambda2[j])/2)}
-          else{tau_theta2[j,k] = 1/rig(1, mean=sqrt( ( ((alpha)^2)*matlambda2[j]*sigma2)/sum(theta[j,k]^2)), scale = 1/( ((alpha)^2)*matlambda2[j]))}
+          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*matlambda2[j]*sigma2)/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*matlambda2[j]))}
 
         }
       }
 
-      tau_theta0=1/rig(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), scale = 1/( v2 ) )
+      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), shape = 1/( v2 ) )
 
 
 
@@ -573,7 +573,7 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       Y_bar<-O- intercepts-X%*%beta-cp
       s=0
       ss=0
-      for(i in 1:p)
+      for(j in 1:p)
       {
         s = s + sum(beta[j]^2)/tau_beta2[j]
         for (k in 1:K) {
@@ -599,7 +599,7 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       #print(c(s,ss))
      #sigma2 = rinvgamma(1, shape=(K)/2 + sum(Q)/2+sum(R)/2 + lam1,scale=( (s+ss+sum(theta0^2)/tau_theta0 )/2 + lam2 ) )
 
-     sigma2 = rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,scale=( (s+ss )/2 + lam2 ) )
+     sigma2 = MCMCpack::rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,scale=( (s+ss )/2 + lam2 ) )
 
       # sigma2 = rinvgamma(1, shape=(n)/2+(K)/2 + sum(Q)/2+sum(R)/2 + lam1,
       #                   scale=( t(Y_bar)%*%Y_bar+s+ss+sum(theta0))/2 + gamma)

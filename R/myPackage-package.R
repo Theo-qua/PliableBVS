@@ -1,13 +1,9 @@
-#' @name Bpliable
-#' @import Rlab
-#' @import lgarch
+#' @name PliableBVS
 #' @import mgcv
-#' @import MCMCpack
+#' @importFrom pgdraw pgdraw
 #' @importFrom Matrix sparseMatrix Diagonal bdiag Matrix
-#' @import caret
-#' @import pgdraw
-#' @import plotly
-#' @importFrom stats dist hclust lm rbinom var median rbeta runif
+#' @importFrom mnormt rmnorm
+#' @importFrom stats dist hclust lm rbinom var median rbeta runif rgamma
 #' @importFrom graphics abline axis lines matplot points segments text hist
 #' @importFrom utils tail
 NULL

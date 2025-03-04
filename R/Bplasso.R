@@ -62,7 +62,7 @@ model<-function(beta0, theta0, beta, theta, X, Z){
   K=ncol(Z)
 
 
-  intercepts = as.numeric(beta0)+Z%*%(matrix(theta0))
+  intercepts = as.numeric(beta0)+Z%*%(matrix(theta0, ncol = 1))
   shared_model = X%*%matrix(beta)
   pliable = compute_pliable(X, Z, theta)
   return(intercepts+  shared_model +pliable)
@@ -88,7 +88,7 @@ errfun.binomial=function(y,yhat,w=rep(1,length(y))){
 #' @param family response type- either "gaussian", "binomial". In the binomial case, y should be 0s and 1s.
 #' @return a list of all the posterior objects
 #' @export
-PliableBVS = function(Y, X,Z,alpha=0.5,family = c("gaussian", "binomial"), niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL,nethod){
+PliableBVS = function(Y, X,Z,alpha=0.5,family = c("gaussian", "binomial"), niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL,method=NULL){
   this.call = match.call()
   if(family=="gaussian"){
     cat("using family=",family,",so the loss function is Gaussian")
@@ -191,19 +191,19 @@ coef_theta1 =list()
    #
 
    #
-    Y_bar<-Y-as.numeric(beta0)-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
+    Y_bar<-Y-as.numeric(beta0)-Z%*%(matrix(theta0,ncol = 1))-X%*%beta-compute_pliable(X, Z, theta)
 
     #Y_bar<-Y_center-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
 
     Y_bar1=Y_bar+as.numeric(beta0)
     beta01=beta0
 
-    beta0<-rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2)))
+    beta0<- as.numeric(mnormt::rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2))) )
 
     Y_bar<-Y_bar-as.numeric(beta0)+as.numeric(beta01)
 
     theta01=theta0
-    Y_bar1=Y_bar+Z%*%(matrix(theta0))
+    Y_bar1=Y_bar+Z%*%(matrix(theta0,ncol = 1))
     #f_theta0<-(t(Z)%*%Z)
    #  f_theta0<-(1/tau_theta0+t(Z)%*%Z)
    #  f_theta0_inverse<-solve(f_theta0)
@@ -218,15 +218,15 @@ coef_theta1 =list()
     YtZ<-t(Y_bar1)%*%Z
     mean_theta0<-f_theta0_inverse%*%t(YtZ)
 
-    theta0<-rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse)
+    theta0<- as.numeric(mnormt::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
 
 
 
 
 
-    Y_bar<- Y_bar-Z%*%(matrix(theta0))+Z%*%(matrix(theta01))
+    Y_bar<- Y_bar-Z%*%(matrix(theta0,ncol = 1))+Z%*%(matrix(theta01,ncol = 1))
 
-    intercepts=as.numeric(beta0)+Z%*%(matrix(theta0))
+    intercepts=as.numeric(beta0)+Z%*%(matrix(theta0,ncol = 1))
 
     # Update beta's
     for(j in 1:p)
@@ -257,7 +257,7 @@ coef_theta1 =list()
       }
       else
       {
-        beta[j] = rmnorm(1, mean=mu, vcov=sigma2*f2_inverse)
+        beta[j] = as.numeric( mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
         Q[j] = 1
         Y_bar=Y_bar+X[,j]*beta_j-X[,j]*beta[j]
         #print(beta[j])
@@ -288,7 +288,7 @@ coef_theta1 =list()
           else
           {
 
-            theta[j,k] = rmnorm(1, mean=mu, vcov=sigma2*f2_inverse)
+            theta[j,k] = as.numeric(mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse))
             R[j,k] = 1
 
             Y_bar_j=Y_bar_j+X[,j]*Z[,k]*theta_jk-X[,j]*Z[,k]*theta[j,k]
@@ -311,19 +311,19 @@ coef_theta1 =list()
 
 
     if(update_tau) {
-      tau_theta0=1/rig(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), scale = 1/( v2 ) )
+      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), shape = 1/( v2 ) )
 
 
         for(j in 1:p)
         {
           if(Q[j]==0){tau_beta2[j] = rgamma(1, shape=1, rate=( ((1-alpha)^2)*lambda2[j])/2)}
-          else{tau_beta2[j] = 1/rig(1, mean=sqrt( ( ((1-alpha)^2)*lambda2[j]*sigma2)/sum(beta[j]^2)), scale = 1/( ((1-alpha)^2)*lambda2[j]))}
+          else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((1-alpha)^2)*lambda2[j]*sigma2)/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*lambda2[j]))}
 
           for (k in 1:K) {
 
 
           if(R[j,k]==0){tau_theta2[j,k] = rgamma(1, shape=1, rate=( ((alpha)^2)*lambda2[j])/2)}
-          else{tau_theta2[j,k] = 1/rig(1, mean=sqrt( ( ((alpha)^2)*lambda2[j]*sigma2)/sum(theta[j,k]^2)), scale = 1/( ((alpha)^2)*lambda2[j]))}
+          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*lambda2[j]*sigma2)/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*lambda2[j]))}
 
           }
 
@@ -336,7 +336,7 @@ coef_theta1 =list()
     Y_bar<-Y- intercepts-X%*%beta-compute_pliable(X, Z, theta)
     s=0
     ss=0
-    for(i in 1:p)
+    for(j in 1:p)
     {
       s = s + sum(beta[j]^2)/tau_beta2[j]
 
@@ -370,7 +370,7 @@ coef_theta1 =list()
     coef_beta0[iter-burnin,] = beta0_vec
     coef_theta0[iter-burnin,] = theta0_vec
     }
-    sigma2 = rinvgamma(1, shape=(n)/2 + sum(Q)/2+sum(R)/2 + lam1,
+    sigma2 = MCMCpack::rinvgamma(1, shape=(n)/2 + sum(Q)/2+sum(R)/2 + lam1,
                        scale=( t(Y_bar)%*%Y_bar+s+ss)/2 + lam2)
 
     #sigma2 = rinvgamma(1, shape=(n)/2+(K)/2 + sum(Q)/2+sum(R)/2 + lam1,
@@ -521,19 +521,19 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       #
 
 
-      Y_bar<-Y-as.numeric(beta0)-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
+      Y_bar<-Y-as.numeric(beta0)-Z%*%(matrix(theta0,ncol = 1))-X%*%beta-compute_pliable(X, Z, theta)
 
      # Y_bar<-Y_center-Z%*%(matrix(theta0))-X%*%beta-compute_pliable(X, Z, theta)
 
       Y_bar1=Y_bar+as.numeric(beta0)
       beta01=beta0
 
-      beta0<-rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2)))
+      beta0<-as.numeric(mnormt::rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2))) )
 
       Y_bar<-Y_bar-as.numeric(beta0)+as.numeric(beta01)
 
       theta01=theta0
-      Y_bar1=Y_bar+Z%*%(matrix(theta0))
+      Y_bar1=Y_bar+Z%*%(matrix(theta0,ncol = 1))
       #f_theta0<-(1+t(Z)%*%Z)
       # f_theta0<-(t(Z)%*%Z)
       # f_theta0_inverse<-solve(f_theta0)
@@ -547,12 +547,12 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       YtZ<-t(Y_bar1)%*%Z
       mean_theta0<-f_theta0_inverse%*%t(YtZ)
 
-      theta0<-rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse)
+      theta0<-as.numeric(mnormt::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
 
 
-      Y_bar<- Y_bar-Z%*%(matrix(theta0))+Z%*%(matrix(theta01))
+      Y_bar<- Y_bar-Z%*%(matrix(theta0,ncol = 1))+Z%*%(matrix(theta01))
 
-      intercepts= as.numeric(beta0)+Z%*%(matrix(theta0))
+      intercepts= as.numeric(beta0)+Z%*%(matrix(theta0,ncol = 1))
 
       # Update beta's
       for(j in 1:p)
@@ -581,7 +581,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
           R[j,]<-0
         }else
         {
-          beta[j] = rmnorm(1, mean=mu, vcov=sigma2*f2_inverse)
+          beta[j] = as.numeric(mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
           Q[j] = 1
 
           Y_bar=Y_bar+X[,j]*beta_j-X[,j]*beta[j]
@@ -615,7 +615,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
             else
             {
 
-              theta[j,k] = rmnorm(1, mean=mu, vcov=sigma2*f2_inverse)
+              theta[j,k] = as.numeric( mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
               R[j,k] = 1
 
               Y_bar_j=Y_bar_j+X[,j]*Z[,k]*theta_jk-X[,j]*Z[,k]*theta[j,k]
@@ -635,19 +635,19 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       for(j in 1:p)
       {
         if(Q[j]==0){tau_beta2[j] = rgamma(1, shape=1, rate=((1-alpha)^2)*matlambda2[j]/2)}
-        else{tau_beta2[j] = 1/rig(1, mean=sqrt(( ((1-alpha)^2)*matlambda2[j]*sigma2)/sum(beta[j]^2)), scale = 1/( ((1-alpha)^2)*matlambda2[j]))}
+        else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt(( ((1-alpha)^2)*matlambda2[j]*sigma2)/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*matlambda2[j]))}
 
 
         for (k in 1:K) {
 
 
           if(R[j,k]==0){tau_theta2[j,k] = rgamma(1, shape=1, rate=( ((alpha)^2)*matlambda2[j])/2)}
-          else{tau_theta2[j,k] = 1/rig(1, mean=sqrt( ( ((alpha)^2)*matlambda2[j]*sigma2)/sum(theta[j,k]^2)), scale = 1/( ((alpha)^2)*matlambda2[j]))}
+          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*matlambda2[j]*sigma2)/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*matlambda2[j]))}
 
         }
       }
 
-      tau_theta0=1/rig(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), scale = 1/( v2 ) )
+      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), shape = 1/( v2 ) )
 
 
 
@@ -659,7 +659,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       Y_bar<-Y-  intercepts-X%*%beta-compute_pliable(X, Z, theta)
       s=0
       ss=0
-      for(i in 1:p)
+      for(j in 1:p)
       {
         s = s + sum(beta[j]^2)/tau_beta2[j]
         for (k in 1:K) {
@@ -686,7 +686,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
      # sigma2 = rinvgamma(1, shape=(n)/2+(K)/2 + sum(Q)/2+sum(R)/2 + lam1,
       #                   scale=( t(Y_bar)%*%Y_bar+s+ss+sum(theta0^2)/tau_theta0 )/2 + lam2)
 
-      sigma2 = rinvgamma(1, shape=(n)/2 + sum(Q)/2+sum(R)/2 + lam1,
+      sigma2 = MCMCpack::rinvgamma(1, shape=(n)/2 + sum(Q)/2+sum(R)/2 + lam1,
                          scale=( t(Y_bar)%*%Y_bar+s+ss)/2 + lam2)
 
 
@@ -794,15 +794,15 @@ plot.PliableBVS <- function(x, type=c("likelihood","dist","val","cont","ms"),coe
   }else if (type=="cont" ){
     xb<- ff$coef[,coef_val[1]]
     yt <- ff$coef_theta[,coef_val[1],coef_val[2]]
-    s <- subplot(
-      plot_ly(x = xb, type = "histogram",color = I("red")),
-      plotly_empty(),
-      plot_ly(x = xb, y = yt, type = "histogram2dcontour"),
-      plot_ly(y = yt, type = "histogram",color = I("blue")),
+    s <- plotly::subplot(
+      plotly::plot_ly(x = xb, type = "histogram",color = I("red")),
+      plotly::plotly_empty(),
+      plotly::plot_ly(x = xb, y = yt, type = "histogram2dcontour"),
+      plotly::plot_ly(y = yt, type = "histogram",color = I("blue")),
       nrows = 2, heights = c(0.2, 0.8), widths = c(0.8, 0.2), margin = 0,
       shareX = TRUE, shareY = TRUE, titleX = FALSE, titleY = FALSE
     )
-    fig <- layout(s, showlegend = FALSE)
+    fig <- plotly::layout(plotly::plotly_build(s), showlegend = FALSE)
 
     fig
     #hist(ff$coef[,coef_val],main = "",xlab = paste0( expression(beta),"_",coef_val) )
@@ -823,7 +823,7 @@ plot.PliableBVS <- function(x, type=c("likelihood","dist","val","cont","ms"),coe
 #' @param prob threshold for binomial prediction
 #' @return  predicted response or class
 #' @export
-predict.PliableBVS <- function(object, X, Z,prob=0.5) {
+predict.PliableBVS <- function(object, X, Z,prob=0.5,...) {
 
 
 

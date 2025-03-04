@@ -5,7 +5,7 @@
 \title{Compute predicted values from a fitted Bpliable  object.
  Make predictions from a fitted Bpliable model}
 \usage{
-\method{predict}{PliableBVS}(object, X, Z, prob = 0.5)
+\method{predict}{PliableBVS}(object, X, Z, prob = 0.5, ...)
 }
 \arguments{
 \item{object}{object returned from a call to Bpliable}

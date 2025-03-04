@@ -12,22 +12,24 @@ Authors@R: c(
         )
      )
 Imports:
-    Rlab,
-    lgarch,
-    mgcv,
     MCMCpack,
-    caret,
-    pgdraw,
     stats,
     graphics,
     Matrix,
-    plotly,
+    statmod,
+    mnormt,
+    mgcv,
+    pgdraw,
     utils
+Suggests:
+    caret,
+    plotly,
+    Rlab
 Maintainer: Theophilus Quachie asenso <t.q.asenso@medisin.uio.no>
 Description: A flexible bayesian regression model for modeling interactions. The motivation is from the original piable lasso model.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
 Date: 2025-02-10
 Language: en-GB
+Config/roxygen2/version: 8.0.0
