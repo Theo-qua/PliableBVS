@@ -114,8 +114,8 @@ N = 5000 ; p =20;nz=4; K=nz
   mu_test= mu[test_ind, ]
   
   
-  err_null[it] <- sum((y_test-mean(y_train))^2)/length(y_test)
-  print(err_null[it])
+  err_null <- sum((y_test-mean(y_train))^2)/length(y_test)
+  print(err_null)
   
   X=X_train;Z=Z_train;y=y_train
   alpha=0.5
