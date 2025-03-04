@@ -1,10 +1,10 @@
-# Bpliable
+# PliableBVS
 A flexible Bayesian variable selection method for modeling interactions
 
 
 ## Usage
 ```r
-devtools::install_github("Theo-qua/Bpliable")
+devtools::install_github("Theo-qua/PliableBVS")
 set.seed(1)
 N = 5000 ; p =20;nz=4; K=nz
   X <- matrix(rnorm(n = N * p), nrow = N, ncol = p)
@@ -118,7 +118,7 @@ N = 5000 ; p =20;nz=4; K=nz
   alpha=0.5
   
   
-  system.time(ff<-Bpliable(Y=y, X,Z,alpha=alpha,family = "gaussian", niter = 5000, burnin = 2000, a_rho = 2, b_rho=3,a_zeta = 2, b_zeta=3,num_update = 50, niter.update =200,burnin.update=100, verbose1 = T,verbose2 = T, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=10^2, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL) )
+  system.time(ff<-PliableBVS(Y=y, X,Z,alpha=alpha,family = "gaussian", niter = 5000, burnin = 2000, a_rho = 2, b_rho=3,a_zeta = 2, b_zeta=3,num_update = 50, niter.update =200,burnin.update=100, verbose1 = T,verbose2 = T, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=10^2, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL) )
 
 
 plot(ff,type="val",coef_val=c(3))

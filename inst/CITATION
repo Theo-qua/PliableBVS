@@ -1,7 +1,7 @@
 bibentry(
   bibtype  = "Misc",
-  key      = "Bpliablepaper",
-  title    = "Bpliable",
+  key      = "PliableBVSpaper",
+  title    = "PliableBVS",
   author   = c(person("Theophilus Quachie", "Asenso"),
                     person("Manuela", "Zucknick")),
   year     = "2025",

@@ -88,26 +88,26 @@ errfun.binomial=function(y,yhat,w=rep(1,length(y))){
 #' @param family response type- either "gaussian", "binomial". In the binomial case, y should be 0s and 1s.
 #' @return a list of all the posterior objects
 #' @export
-Bpliable = function(Y, X,Z,alpha=0.5,family = c("gaussian", "binomial"), niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL,nethod){
+PliableBVS = function(Y, X,Z,alpha=0.5,family = c("gaussian", "binomial"), niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL,nethod){
   this.call = match.call()
   if(family=="gaussian"){
     cat("using family=",family,",so the loss function is Gaussian")
-    fit=Bpliable_gs(Y, X,Z,alpha=alpha, niter = niter, burnin = burnin, a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,num_update = num_update, niter.update =niter.update,burnin.update=burnin.update, verbose1 = verbose1,verbose2 = verbose2, lam1=lam1,lam2=lam2, rho_prior=rho_prior, rho=rho,zeta=zeta,c2=c2,v2=v2, update_tau=update_tau,option.update=option.update,lambda2_update=lambda2_update)
+    fit=PliableBVS_gs(Y, X,Z,alpha=alpha, niter = niter, burnin = burnin, a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,num_update = num_update, niter.update =niter.update,burnin.update=burnin.update, verbose1 = verbose1,verbose2 = verbose2, lam1=lam1,lam2=lam2, rho_prior=rho_prior, rho=rho,zeta=zeta,c2=c2,v2=v2, update_tau=update_tau,option.update=option.update,lambda2_update=lambda2_update)
   }else{
     cat("using family=",family,",so the loss function is logistic")
-    fit=Bpliable_lr(Y, X,Z,alpha=alpha, niter = niter, burnin = burnin, a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,num_update = num_update, niter.update =niter.update,burnin.update=burnin.update, verbose1 = verbose1,verbose2 = verbose2, lam1=lam1,lam2=lam2, rho_prior=rho_prior, rho=rho,zeta=zeta,c2=c2,v2=v2, update_tau=update_tau,option.update=option.update,lambda2_update=lambda2_update)
+    fit=PliableBVS_lr(Y, X,Z,alpha=alpha, niter = niter, burnin = burnin, a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,num_update = num_update, niter.update =niter.update,burnin.update=burnin.update, verbose1 = verbose1,verbose2 = verbose2, lam1=lam1,lam2=lam2, rho_prior=rho_prior, rho=rho,zeta=zeta,c2=c2,v2=v2, update_tau=update_tau,option.update=option.update,lambda2_update=lambda2_update)
 
   }
 
   fit$call=this.call
   fit$family=family
-  class(fit) <- "Bpliable"
+  class(fit) <- "PliableBVS"
 
   return(fit)
 }
 
 
-Bpliable_gs = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL)
+PliableBVS_gs = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL)
 {
   ####################################
   # Create and Initialize parameters #
@@ -141,7 +141,7 @@ Bpliable_gs = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1, 
   # Compute lambda2 via EM         #
   ##################################
   if (update_tau==TRUE){
-    fit_for_lambda2 = Bpliable_EM_lambda_gs(Y, X,Z,alpha, num_update = num_update, niter = niter.update,burnin =burnin.update , a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,lam1=lam1,lam2=lam2,c2=c2,v2=v2,option.update=option.update,option.weight.group=option.weight.group,verbose = verbose2)
+    fit_for_lambda2 = PliableBVS_EM_lambda_gs(Y, X,Z,alpha, num_update = num_update, niter = niter.update,burnin =burnin.update , a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,lam1=lam1,lam2=lam2,c2=c2,v2=v2,option.update=option.update,option.weight.group=option.weight.group,verbose = verbose2)
     lambda2 = apply(fit_for_lambda2$lambda2_path,2,tail,1)}else
     {
       lambda2 <- rep(lambda2_update,p)
@@ -444,7 +444,7 @@ coef_theta1 =list()
 ###########################################################
 
 
-Bpliable_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 100,burnin = 50, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,verbose = FALSE, lam1=1e-1, lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=100,v2=1e-1,option.update="global",option.weight.group=FALSE)
+PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 100,burnin = 50, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,verbose = FALSE, lam1=1e-1, lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=100,v2=1e-1,option.update="global",option.weight.group=FALSE)
 {
   ####################################
   # Create and Initialize parameters #
@@ -763,7 +763,7 @@ Bpliable_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 100
 
 
 #' @export
-plot.Bpliable <- function(x, type=c("likelihood","dist","val","cont","ms"),coef_val=c(1,1),...) {
+plot.PliableBVS <- function(x, type=c("likelihood","dist","val","cont","ms"),coef_val=c(1,1),...) {
   ff <- x
   if (type=="likelihood") {
     plot(log(ff$Likelihood),type = "l",ylab = "log(likelihood)",xlab = "iterations")
@@ -823,7 +823,7 @@ plot.Bpliable <- function(x, type=c("likelihood","dist","val","cont","ms"),coef_
 #' @param prob threshold for binomial prediction
 #' @return  predicted response or class
 #' @export
-predict.Bpliable <- function(object, X, Z,prob=0.5) {
+predict.PliableBVS <- function(object, X, Z,prob=0.5) {
 
 
 

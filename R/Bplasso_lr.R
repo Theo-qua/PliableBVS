@@ -1,6 +1,6 @@
 
 
-Bpliable_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL)
+PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,num_update = 100, niter.update =100,burnin.update=50, verbose1 = FALSE,verbose2 = FALSE, lam1=1e-1,lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=10^2,v2=1e-1, update_tau=TRUE,option.weight.group=FALSE,option.update="global",lambda2_update=NULL)
 {
   ####################################
   # Create and Initialize parameters #
@@ -46,7 +46,7 @@ Bpliable_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1, 
   # Compute lambda2 via EM         #
   ##################################
   if (update_tau==TRUE){
-    fit_for_lambda2 = Bpliable_EM_lambda_lr(Y, X,Z,alpha, num_update = num_update, niter = niter.update,burnin =burnin.update , a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,lam1=lam1,lam2=lam2,c2=c2,v2=v2,option.update=option.update,option.weight.group=option.weight.group,verbose = verbose2)
+    fit_for_lambda2 = PliableBVS_EM_lambda_lr(Y, X,Z,alpha, num_update = num_update, niter = niter.update,burnin =burnin.update , a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,lam1=lam1,lam2=lam2,c2=c2,v2=v2,option.update=option.update,option.weight.group=option.weight.group,verbose = verbose2)
     lambda2 = apply(fit_for_lambda2$lambda2_path,2,tail,1)}else
     {
       lambda2 <- rep(lambda2_update,p)
@@ -354,7 +354,7 @@ Bpliable_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1, 
 ###########################################################
 
 
-Bpliable_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 100,burnin = 50, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,verbose = FALSE, lam1=1e-1, lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=100,v2=1e-1,option.update="global",option.weight.group=FALSE)
+PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 100,burnin = 50, a_rho=1, b_rho=1,a_zeta=1, b_zeta=1,verbose = FALSE, lam1=1e-1, lam2=1e-1, rho_prior=TRUE, rho=0.5,zeta=0.5,c2=100,v2=1e-1,option.update="global",option.weight.group=FALSE)
 {
   ####################################
   # Create and Initialize parameters #
