@@ -198,7 +198,7 @@ coef_theta1 =list()
     Y_bar1=Y_bar+as.numeric(beta0)
     beta01=beta0
 
-    beta0<- as.numeric(mnormt::rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2))) )
+    beta0<- as.numeric(lgarch::rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2))) )
 
     Y_bar<-Y_bar-as.numeric(beta0)+as.numeric(beta01)
 
@@ -218,7 +218,7 @@ coef_theta1 =list()
     YtZ<-t(Y_bar1)%*%Z
     mean_theta0<-f_theta0_inverse%*%t(YtZ)
 
-    theta0<- as.numeric(mnormt::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
+    theta0<- as.numeric(lgarch::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
 
 
 
@@ -257,7 +257,7 @@ coef_theta1 =list()
       }
       else
       {
-        beta[j] = as.numeric( mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
+        beta[j] = as.numeric( lgarch::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
         Q[j] = 1
         Y_bar=Y_bar+X[,j]*beta_j-X[,j]*beta[j]
         #print(beta[j])
@@ -288,7 +288,7 @@ coef_theta1 =list()
           else
           {
 
-            theta[j,k] = as.numeric(mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse))
+            theta[j,k] = as.numeric(lgarch::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse))
             R[j,k] = 1
 
             Y_bar_j=Y_bar_j+X[,j]*Z[,k]*theta_jk-X[,j]*Z[,k]*theta[j,k]
@@ -528,7 +528,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       Y_bar1=Y_bar+as.numeric(beta0)
       beta01=beta0
 
-      beta0<-as.numeric(mnormt::rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2))) )
+      beta0<-as.numeric(lgarch::rmnorm(1,mean=sum(Y_bar1)/(n*(1+sigma2/c2)),vcov=1/(n*(1+sigma2/c2))) )
 
       Y_bar<-Y_bar-as.numeric(beta0)+as.numeric(beta01)
 
@@ -547,7 +547,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       YtZ<-t(Y_bar1)%*%Z
       mean_theta0<-f_theta0_inverse%*%t(YtZ)
 
-      theta0<-as.numeric(mnormt::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
+      theta0<-as.numeric(lgarch::rmnorm(1,mean=mean_theta0,vcov=f_theta0_inverse) )
 
 
       Y_bar<- Y_bar-Z%*%(matrix(theta0,ncol = 1))+Z%*%(matrix(theta01))
@@ -581,7 +581,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
           R[j,]<-0
         }else
         {
-          beta[j] = as.numeric(mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
+          beta[j] = as.numeric(lgarch::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
           Q[j] = 1
 
           Y_bar=Y_bar+X[,j]*beta_j-X[,j]*beta[j]
@@ -615,7 +615,7 @@ PliableBVS_EM_lambda_gs = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
             else
             {
 
-              theta[j,k] = as.numeric( mnormt::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
+              theta[j,k] = as.numeric( lgarch::rmnorm(1, mean=mu, vcov=sigma2*f2_inverse) )
               R[j,k] = 1
 
               Y_bar_j=Y_bar_j+X[,j]*Z[,k]*theta_jk-X[,j]*Z[,k]*theta[j,k]

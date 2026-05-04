@@ -17,7 +17,7 @@ Imports:
     graphics,
     Matrix,
     statmod,
-    mnormt,
+    lgarch,
     mgcv,
     pgdraw,
     utils
