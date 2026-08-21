@@ -642,7 +642,7 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
     # output the posterior mean and median as our estimator
     coef_path[,update] = apply(coef, 1, mean)
     coef_median_path[,update] = apply(coef, 1, median)
-    pos_mean_theta = (Reduce("+",coef_theta1))/(niter)
+    pos_mean_theta = (Reduce("+", coef_theta1))/(niter - burnin)
     pos_median_theta<-matrix(0,p,K)
     pos_mean_theta<-matrix(0,p,K)
 
