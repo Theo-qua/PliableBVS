@@ -49,6 +49,7 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
     fit_for_lambda2 = PliableBVS_EM_lambda_lr(Y, X,Z,alpha, num_update = num_update, niter = niter.update,burnin =burnin.update , a_rho=a_rho, b_rho=b_rho,a_zeta=a_zeta, b_zeta=b_zeta,lam1=lam1,lam2=lam2,c2=c2,v2=v2,option.update=option.update,option.weight.group=option.weight.group,verbose = verbose2)
     lambda2 = apply(fit_for_lambda2$lambda2_path,2,tail,1)}else
     {
+      fit_for_lambda2=NULL
       lambda2 <- rep(lambda2_update,p)
     }
 
