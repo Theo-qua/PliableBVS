@@ -144,13 +144,13 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
       #Y_bar<-Y- intercepts-X%*%beta-compute_pliable(X, Z, theta)
 
       f1 = t(omega2*X[,j])%*%(Y_bar+X[,j]*beta[j])
-      f2 = t(X[,j])%*%(X[,j]*omega2)+1/(sigma2*tau_beta2[j])
+      f2 = t(X[,j])%*%(X[,j]*omega2)+1/(tau_beta2[j])
       f2_inverse = 1/f2#solve(f2)
       mu = f2_inverse %*% f1
       ### Main part
-      eta[j] = rho/(rho+(1-rho)*(tau_beta2[j]*sigma2)^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
+      eta[j] = rho/(rho+(1-rho)*(tau_beta2[j])^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
       maxf <- max(f2)
-      trythis <- (-1/2)*log(tau_beta2[j]*sigma2) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
+      trythis <- (-1/2)*log(tau_beta2[j]) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
       eta[j] = rho/(rho+(1-rho)*exp(trythis))
       #print(c(l[j],runif(1)))
       if(runif(1)<eta[j]) {
@@ -172,13 +172,13 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
           theta_jk=theta[j,k]
 
           f1 = t(omega2*X[,j]*Z[,k])%*%(Y_bar_j+X[,j]*Z[,k]*theta[j,k])
-          f2 = t(X[,j]*Z[,k])%*%(X[,j]*Z[,k]*omega2)+1/(sigma2*tau_theta2[j,k])
+          f2 = t(X[,j]*Z[,k])%*%(X[,j]*Z[,k]*omega2)+1/(tau_theta2[j,k])
           f2_inverse = 1/f2#solve(f2)
           mu = f2_inverse %*% f1
           ### Main part
-          gamma[j,k] = zeta/(zeta+(1-zeta)*(tau_theta2[j,k]*sigma2)^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
+          gamma[j,k] = zeta/(zeta+(1-zeta)*(tau_theta2[j,k])^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
           maxf <- max(f2)
-          trythis <- (-1/2)*log(tau_theta2[j,k]*sigma2) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
+          trythis <- (-1/2)*log(tau_theta2[j,k]) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
           gamma[j,k] = zeta/(zeta+(1-zeta)*exp(trythis))
 
           if(runif(1)<gamma[j,k]){
@@ -213,19 +213,19 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
 
 
     if(update_tau) {
-      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), shape = 1/( v2 ) )
+      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2)/sum(theta0^2)), shape = 1/( v2 ) )
 
 
       for(j in 1:p)
       {
         if(Q[j]==0){tau_beta2[j] = rgamma(1, shape=1, rate=( ((1-alpha)^2)*lambda2[j])/2)}
-        else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((1-alpha)^2)*lambda2[j]*sigma2)/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*lambda2[j]))}
+        else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((1-alpha)^2)*lambda2[j])/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*lambda2[j]))}
 
         for (k in 1:K) {
 
 
           if(R[j,k]==0){tau_theta2[j,k] = rgamma(1, shape=1, rate=( ((alpha)^2)*lambda2[j])/2)}
-          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*lambda2[j]*sigma2)/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*lambda2[j]))}
+          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*lambda2[j])/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*lambda2[j]))}
 
         }
 
@@ -236,17 +236,17 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
 
     # Update sigma2
     cp<-compute_pliable(X, Z, theta)
-    Y_bar<-O- intercepts-X%*%beta-cp
-    s=0
-    ss=0
-    for(j in 1:p)
-    {
-      s = s + sum(beta[j]^2)/tau_beta2[j]
+   # Y_bar<-O- intercepts-X%*%beta-cp
+   # s=0
+   # ss=0
+   # for(j in 1:p)
+   # {
+   #   s = s + sum(beta[j]^2)/tau_beta2[j]
 
-      for (k in 1:K) {
-        ss = ss + sum(theta[j,k]^2)/tau_theta2[j,k]
-      }
-    }
+   #   for (k in 1:K) {
+   #     ss = ss + sum(theta[j,k]^2)/tau_theta2[j,k]
+   #   }
+   # }
     beta_vec = c(beta)
     beta0_vec=c(beta0)
     theta0_vec=c(theta0)
@@ -275,7 +275,7 @@ PliableBVS_lr = function(Y, X,Z,alpha=0.5, niter = 10000, burnin = 5000, a_rho=1
     }
    # sigma2 = rinvgamma(1, shape= (K)/2 + sum(Q)/2+sum(R)/2 + lam1,                scale=( ( s+ss+sum(theta0^2)/tau_theta0 )/2 + lam2 ) )
 
-    sigma2 = MCMCpack::rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,                scale=( ( s+ss )/2 + lam2 ) )
+   # sigma2 = MCMCpack::rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,                scale=( ( s+ss )/2 + lam2 ) )
     #sigma2 = rinvgamma(1, shape=(n)/2+(K)/2 + sum(Q)/2+sum(R)/2 + lam1,
     #                   scale=( t(Y_bar)%*%Y_bar+s+ss+sum(theta0))/2 + gamma)
 
@@ -480,13 +480,13 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
         #Y_bar<-Y- intercepts-X%*%beta-compute_pliable(X, Z, theta)
 
         f1 = t(omega2*X[,j])%*%(Y_bar+X[,j]*beta[j])
-        f2 = t(X[,j])%*%(X[,j]*omega2)+1/(sigma2*tau_beta2[j])
+        f2 = t(X[,j])%*%(X[,j]*omega2)+1/(tau_beta2[j])
         f2_inverse = 1/f2#solve(f2)
         mu = f2_inverse %*% f1
         ### Main part
-        eta[j] = rho/(rho+(1-rho)*(tau_beta2[j]*sigma2)^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
+        eta[j] = rho/(rho+(1-rho)*(tau_beta2[j])^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
         maxf <- max(f2)
-        trythis <- (-1/2)*log(tau_beta2[j]*sigma2) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
+        trythis <- (-1/2)*log(tau_beta2[j]) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
         eta[j] = rho/(rho+(1-rho)*exp(trythis))
 
         if(runif(1)<eta[j]) {
@@ -508,13 +508,13 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
             theta_jk=theta[j,k]
 
             f1 = t(omega2*X[,j]*Z[,k])%*%(Y_bar_j+X[,j]*Z[,k]*theta[j,k])
-            f2 = t(X[,j]*Z[,k])%*%(X[,j]*Z[,k]*omega2)+1/(sigma2*tau_theta2[j,k])
+            f2 = t(X[,j]*Z[,k])%*%(X[,j]*Z[,k]*omega2)+1/(tau_theta2[j,k])
             f2_inverse = 1/f2#solve(f2)
             mu = f2_inverse %*% f1
             ### Main part
-            gamma[j,k] = zeta/(zeta+(1-zeta)*(tau_theta2[j,k]*sigma2)^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
+            gamma[j,k] = zeta/(zeta+(1-zeta)*(tau_theta2[j,k])^(-1/2)*(f2)^(-1/2)*exp(t(f1)%*%mu/(2)))
             maxf <- max(f2)
-            trythis <- (-1/2)*log(tau_theta2[j,k]*sigma2) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
+            trythis <- (-1/2)*log(tau_theta2[j,k]) + (-1/2)*log((f2/maxf)) + (-dim(f2)[1]/2)*log(maxf) + t(f1)%*%mu/(2)
             gamma[j,k] = zeta/(zeta+(1-zeta)*exp(trythis))
 
             if(runif(1)<gamma[j,k]){
@@ -549,19 +549,19 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       for(j in 1:p)
       {
         if(Q[j]==0){tau_beta2[j] = rgamma(1, shape=1, rate=((1-alpha)^2)*matlambda2[j]/2)}
-        else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt(( ((1-alpha)^2)*matlambda2[j]*sigma2)/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*matlambda2[j]))}
+        else{tau_beta2[j] = 1/statmod::rinvgauss(1, mean=sqrt(( ((1-alpha)^2)*matlambda2[j])/sum(beta[j]^2)), shape = 1/( ((1-alpha)^2)*matlambda2[j]))}
 
 
         for (k in 1:K) {
 
 
           if(R[j,k]==0){tau_theta2[j,k] = rgamma(1, shape=1, rate=( ((alpha)^2)*matlambda2[j])/2)}
-          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*matlambda2[j]*sigma2)/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*matlambda2[j]))}
+          else{tau_theta2[j,k] = 1/statmod::rinvgauss(1, mean=sqrt( ( ((alpha)^2)*matlambda2[j])/sum(theta[j,k]^2)), shape = 1/( ((alpha)^2)*matlambda2[j]))}
 
         }
       }
 
-      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2*sigma2)/sum(theta0^2)), shape = 1/( v2 ) )
+      tau_theta0=1/statmod::rinvgauss(1, mean=sqrt( ( v2)/sum(theta0^2)), shape = 1/( v2 ) )
 
 
 
@@ -574,13 +574,13 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       Y_bar<-O- intercepts-X%*%beta-cp
       s=0
       ss=0
-      for(j in 1:p)
-      {
-        s = s + sum(beta[j]^2)/tau_beta2[j]
-        for (k in 1:K) {
-          ss = ss + sum(theta[j,k]^2)/tau_theta2[j,k]
-        }
-      }
+      #for(j in 1:p)
+     # {
+      #  s = s + sum(beta[j]^2)/tau_beta2[j]
+      #  for (k in 1:K) {
+      #    ss = ss + sum(theta[j,k]^2)/tau_theta2[j,k]
+      #  }
+      #}
       beta_vec = c(beta)
       beta0_vec=c(beta0)
       theta0_vec=c(theta0)
@@ -600,7 +600,7 @@ PliableBVS_EM_lambda_lr = function(Y, X,Z,alpha=0.5, num_update = 100, niter = 1
       #print(c(s,ss))
      #sigma2 = rinvgamma(1, shape=(K)/2 + sum(Q)/2+sum(R)/2 + lam1,scale=( (s+ss+sum(theta0^2)/tau_theta0 )/2 + lam2 ) )
 
-     sigma2 = MCMCpack::rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,scale=( (s+ss )/2 + lam2 ) )
+     #sigma2 = MCMCpack::rinvgamma(1, shape=  sum(Q)/2+sum(R)/2 + lam1,scale=( (s+ss )/2 + lam2 ) )
 
       # sigma2 = rinvgamma(1, shape=(n)/2+(K)/2 + sum(Q)/2+sum(R)/2 + lam1,
       #                   scale=( t(Y_bar)%*%Y_bar+s+ss+sum(theta0))/2 + gamma)
